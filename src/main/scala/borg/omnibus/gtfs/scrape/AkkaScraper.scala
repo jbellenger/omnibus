@@ -7,11 +7,11 @@ import akka.pattern.ask
 import akka.stream.ActorFlowMaterializer
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.Timeout
+import borg.omnibus.gtfs.model.GtfsrtSnapshot
 import borg.omnibus.gtfs.providers.Provider
 import borg.omnibus.gtfs.scrape.Scraper.ScrapeResult
 import com.google.transit.realtime.GtfsRealtime.FeedMessage
 
-import scala.collection.JavaConversions._
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
@@ -20,23 +20,22 @@ class AkkaScraper(implicit arf: ActorRefFactory) extends Scraper {
 
   private implicit val timeout: Timeout = 3.seconds
   private implicit val ec = arf.dispatcher
-  private var ref = arf.actorOf(AkkaScraperActor.props)
+  private var _ref = arf.actorOf(AkkaScraperActor.props)
 
-  private def withRef[T](fn: => T): T = {
-    require(ref != null, "method called after scraper has been shutdown")
-    fn
+  private def ref: ActorRef = {
+    require(_ref != null, "method called after scraper has been shutdown")
+    _ref
   }
 
-  override def scrape(provider: Provider): Future[ScrapeResult] = withRef {
+  override def scrape(provider: Provider): Future[ScrapeResult] = {
     (ref ? ScrapeReq(provider)).mapTo[ScrapeRep].map(_.result)
   }
 
   override def shutdown(): Unit = {
     ref ! PoisonPill
-    ref = null
+    _ref = null
   }
 
-  // JMB TODO: this should be doable without actors using only streams
   private class AkkaScraperActor extends Actor {
     val http = Http(context.system)
     implicit val materializer = ActorFlowMaterializer()
@@ -53,21 +52,17 @@ class AkkaScraper(implicit arf: ActorRefFactory) extends Scraper {
 
         val req = HttpRequest(uri = uri.toRelative)
 
-        val printChunksConsumer = Sink.foreach[HttpResponse] { res =>
+        val replySink = Sink.foreach[HttpResponse] { res =>
           if (res.status == StatusCodes.OK) {
             res.entity.getDataBytes().map { chunk =>
-              val msg = FeedMessage.parseFrom(chunk.toArray)
-              msg.getEntityList foreach {ent =>
-                println(ent)
-              }
+              val proto = FeedMessage.parseFrom(chunk.toArray)
+              val parsed = GtfsrtSnapshot(proto)
+              osender ! ScrapeRep(parsed)
             }.to(Sink.ignore()).run()
-          } else {
-            println(res.status)
           }
         }
 
-        val finishFuture = Source.single(req).via(httpClient).runWith(printChunksConsumer)
-        osender ! ScrapeRep(result = true)
+        Source.single(req).via(httpClient).runWith(replySink)
     }
   }
 
@@ -76,7 +71,7 @@ class AkkaScraper(implicit arf: ActorRefFactory) extends Scraper {
 
     object Messages {
       case class ScrapeReq(provider: Provider)
-      case class ScrapeRep(result: ScrapeResult)
+      case class ScrapeRep(result: GtfsrtSnapshot)
     }
   }
 }

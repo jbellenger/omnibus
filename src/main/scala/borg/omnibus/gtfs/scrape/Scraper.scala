@@ -1,5 +1,6 @@
 package borg.omnibus.gtfs.scrape
 
+import borg.omnibus.gtfs.model.GtfsrtSnapshot
 import borg.omnibus.gtfs.providers.Provider
 import borg.omnibus.gtfs.scrape.Scraper.ScrapeResult
 
@@ -15,5 +16,5 @@ trait Scraper {
 }
 
 object Scraper {
-  type ScrapeResult = Boolean
+  type ScrapeResult = GtfsrtSnapshot
 }
