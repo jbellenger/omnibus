@@ -1,5 +1,7 @@
 package borg.omnibus.gtfs
 
+import borg.omnibus.gtfsrt._
+
 package object model {
   lazy val MockDepartures = List(
     Departure(Int.MinValue, Int.MinValue),

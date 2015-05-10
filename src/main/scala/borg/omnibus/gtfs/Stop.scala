@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.gtfs
 
 import java.net.URL
 

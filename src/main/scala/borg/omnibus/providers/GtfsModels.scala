@@ -1,6 +1,8 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.providers
 
 import java.net.URL
+
+import borg.omnibus.gtfs._
 
 import scala.io.Source
 import scala.reflect.io.ZipArchive

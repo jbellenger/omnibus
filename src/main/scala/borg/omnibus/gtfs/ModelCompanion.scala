@@ -1,6 +1,6 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.gtfs
 
-private[model] trait ModelCompanion[T] {
+trait ModelCompanion[T] {
   def parse(lines: Iterable[String]): T
 
   protected def toMap[U](lines: Iterable[String], parse: String => U, id: U => String): Map[String, U] =

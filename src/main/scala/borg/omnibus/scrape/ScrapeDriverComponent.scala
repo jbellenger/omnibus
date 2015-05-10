@@ -1,9 +1,9 @@
-package borg.omnibus.gtfs.scrape
+package borg.omnibus.scrape
 
 import akka.actor.{Actor, ActorRef, Props}
-import borg.omnibus.gtfs.providers.{Provider, ProvidersComponent}
-import borg.omnibus.gtfs.store.StoreComponent
-import borg.omnibus.gtfs.util.ActorContextExecutor
+import borg.omnibus.providers.{Provider, ProvidersComponent}
+import borg.omnibus.store.StoreComponent
+import borg.omnibus.util.ActorContextExecutor
 
 trait ScrapeDriverComponent {
   self: ProvidersComponent

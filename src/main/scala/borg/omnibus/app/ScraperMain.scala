@@ -1,10 +1,10 @@
-package borg.omnibus.gtfs.app
+package borg.omnibus.app
 
 import akka.actor.ActorSystem
-import borg.omnibus.gtfs.model.GtfsrtSnapshot
-import borg.omnibus.gtfs.providers.{Providers, ProvidersComponent}
-import borg.omnibus.gtfs.scrape.{AkkaScraper, ScrapeDriverComponent, Scraper, ScraperComponent}
-import borg.omnibus.gtfs.store.{MongoCollectionStore, Store, StoreComponent}
+import borg.omnibus.gtfsrt.GtfsrtSnapshot
+import borg.omnibus.providers.{Providers, ProvidersComponent}
+import borg.omnibus.scrape.{AkkaScraper, ScrapeDriverComponent, Scraper, ScraperComponent}
+import borg.omnibus.store.{MongoCollectionStore, Store, StoreComponent}
 
 object ScraperMain extends App {
   implicit val system = ActorSystem("scraper")

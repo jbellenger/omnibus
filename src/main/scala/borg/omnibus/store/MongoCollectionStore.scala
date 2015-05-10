@@ -1,6 +1,6 @@
-package borg.omnibus.gtfs.store
+package borg.omnibus.store
 
-import borg.omnibus.gtfs.model.GtfsrtSnapshot
+import borg.omnibus.gtfsrt.GtfsrtSnapshot
 import com.mongodb.casbah.Imports._
 
 class MongoCollectionStore(host: String, port: Int, dbName: String, collectionName: String) extends Store[GtfsrtSnapshot] {

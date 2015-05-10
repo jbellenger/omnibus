@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.gtfs
 
 import java.net.URL
 
@@ -31,7 +31,6 @@ object Route extends {
           a(7),
           a(8)
         )
-
     }
   }
 }

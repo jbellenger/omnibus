@@ -1,8 +1,8 @@
-package borg.omnibus.gtfs.scrape
+package borg.omnibus.scrape
 
-import borg.omnibus.gtfs.model.GtfsrtSnapshot
-import borg.omnibus.gtfs.providers.Provider
-import borg.omnibus.gtfs.scrape.Scraper.ScrapeResult
+import borg.omnibus.gtfsrt.GtfsrtSnapshot
+import borg.omnibus.providers.Provider
+import borg.omnibus.scrape.Scraper.ScrapeResult
 
 import scala.concurrent.Future
 

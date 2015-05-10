@@ -1,6 +1,6 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.gtfsrt
 
-import borg.omnibus.gtfs.model.MongoImplicits._
+import borg.omnibus.util.MongoImplicits._
 import com.google.transit.realtime.GtfsRealtime
 import com.mongodb.casbah.Imports._
 

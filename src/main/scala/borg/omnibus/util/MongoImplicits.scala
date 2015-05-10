@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.util
 
 import com.mongodb.casbah.Imports._
 

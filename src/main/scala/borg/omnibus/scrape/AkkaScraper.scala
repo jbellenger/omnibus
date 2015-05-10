@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs.scrape
+package borg.omnibus.scrape
 
 import akka.actor._
 import akka.http.Http
@@ -7,9 +7,9 @@ import akka.pattern.ask
 import akka.stream.ActorFlowMaterializer
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.Timeout
-import borg.omnibus.gtfs.model.GtfsrtSnapshot
-import borg.omnibus.gtfs.providers.Provider
-import borg.omnibus.gtfs.scrape.Scraper.ScrapeResult
+import borg.omnibus.gtfsrt.GtfsrtSnapshot
+import borg.omnibus.providers.Provider
+import borg.omnibus.scrape.Scraper.ScrapeResult
 import com.google.transit.realtime.GtfsRealtime.FeedMessage
 
 import scala.concurrent.Future

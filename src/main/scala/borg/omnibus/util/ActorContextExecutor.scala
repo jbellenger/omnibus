@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs.util
+package borg.omnibus.util
 
 import akka.actor.Actor
 

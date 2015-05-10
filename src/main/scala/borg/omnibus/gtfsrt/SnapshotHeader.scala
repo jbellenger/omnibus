@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.gtfsrt
 
 import com.google.transit.realtime.GtfsRealtime
 import com.mongodb.casbah.Imports._

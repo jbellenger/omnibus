@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs.providers
+package borg.omnibus.providers
 
 import org.scalatest._
 

@@ -1,6 +1,4 @@
-package borg.omnibus.gtfs.providers
-
-import borg.omnibus.gtfs.model.{GtfsModels, GtfsrtMeta}
+package borg.omnibus.providers
 
 import scala.concurrent.duration._
 

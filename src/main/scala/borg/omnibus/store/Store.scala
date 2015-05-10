@@ -1,6 +1,6 @@
-package borg.omnibus.gtfs.store
+package borg.omnibus.store
 
-import borg.omnibus.gtfs.model.GtfsrtSnapshot
+import borg.omnibus.gtfsrt.GtfsrtSnapshot
 
 trait Store[T] {
   def save(obj: T)
