@@ -2,7 +2,7 @@ package borg.omnibus.gtfs.model
 
 case class StopTime(
   tripId: String,
-  arrivalTime: String,      // bart uses a 25-hour clock, which makes parsing difficult
+  arrivalTime: String,      // bart uses a 25-hour clock which makes parsing difficult
   departureTime: String,
   stopId: String,
   stopSequence: Int,

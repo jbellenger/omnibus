@@ -2,8 +2,7 @@ package borg.omnibus.gtfs.model
 
 import java.net.URL
 
-import scala.collection
-import scala.collection.immutable.MapLike
+import scala.language.implicitConversions
 
 case class Stop(
   id: String,

@@ -5,18 +5,18 @@ import java.net.URL
 import scala.io.Source
 import scala.reflect.io.ZipArchive
 
-case class Models(
+case class GtfsModels(
   stops: Stops,
   trips: Trips,
   routes: Routes,
   stopTimes: StopTimes
 )
 
-object Models {
-  def fromResource(resourcePath: String): Models =
+object GtfsModels {
+  def fromResource(resourcePath: String): GtfsModels =
     fromUrl(getClass.getResource(resourcePath))
 
-  def fromUrl(url: URL): Models = {
+  def fromUrl(url: URL): GtfsModels = {
     val zip = ZipArchive.fromURL(url)
     val data = zip.map { file =>
       val body = Source.fromBytes(file.toByteArray)
@@ -26,15 +26,15 @@ object Models {
   }
 
   private def fromCsv[T](body: String, companion: ModelCompanion[T]): T = {
-    // skip first line, header
     body.lines.toList match {
-      case header :: body =>
-        companion.parse(body)
+      case header :: tail =>
+        companion.parse(tail)
+      case Nil => throw new IllegalArgumentException("body is empty")
     }
   }
 
-  def apply(data: Map[String, String]): Models = {
-    Models(
+  def apply(data: Map[String, String]): GtfsModels = {
+    GtfsModels(
       fromCsv(data("stops.txt"), Stops),
       fromCsv(data("trips.txt"), Trips),
       fromCsv(data("routes.txt"), Routes),
