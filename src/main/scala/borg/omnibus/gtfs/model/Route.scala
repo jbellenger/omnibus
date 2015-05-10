@@ -2,6 +2,8 @@ package borg.omnibus.gtfs.model
 
 import java.net.URL
 
+import scala.language.implicitConversions
+
 case class Route(
   routeId: String,
   agencyId: String,
