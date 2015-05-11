@@ -3,8 +3,9 @@ package borg.omnibus.app
 import akka.actor.ActorSystem
 import borg.omnibus.gtfsrt.GtfsrtSnapshot
 import borg.omnibus.providers.{Providers, ProvidersComponent}
-import borg.omnibus.scrape.{AkkaScraper, ScrapeDriverComponent, Scraper, ScraperComponent}
-import borg.omnibus.store.{MongoCollectionStore, Store, StoreComponent}
+import borg.omnibus.scrape.{AkkaScraper, ScrapeDriverComponent, ScraperComponent}
+import borg.omnibus.store._
+import com.mongodb.casbah.MongoClient
 
 object ScraperMain extends App {
   implicit val system = ActorSystem("scraper")
@@ -12,11 +13,16 @@ object ScraperMain extends App {
   val env = new ScrapeDriverComponent
       with ProvidersComponent
       with ScraperComponent
-      with StoreComponent {
+      with StoresComponent {
 
     override lazy val providers = Providers.providers
-    override lazy val store: Store[GtfsrtSnapshot] = new MongoCollectionStore("localhost", 27017, "omnibus", "gtfsrt")
-    override lazy val scraper: Scraper = new AkkaScraper
+
+    private lazy val db = MongoClient("localhost", 27017).getDB("omnibus")
+    override lazy val gtfsrtStore =
+      new MongoCollectionStore(db, MongoIndices.Gtfsrt, "gtfsrt")
+        .wrap(GtfsrtSnapshot.MongoCodec)
+
+    override lazy val scraper = new AkkaScraper
 
     override val scrapeDriver = system.actorOf(ScrapeDriver.props)
   }

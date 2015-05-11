@@ -1,6 +1,5 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.gtfsrt
 
-import borg.omnibus.gtfsrt.GtfsrtSnapshot
 import org.scalatest._
 
 class GtfsrtSnapshotSpec extends WordSpec with Matchers {

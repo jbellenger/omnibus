@@ -1,8 +1,9 @@
-package borg.omnibus.gtfs
+package borg.omnibus
 
-import borg.omnibus.gtfsrt._
+import borg.omnibus.gtfs.{Direction0, Direction1}
+import borg.omnibus.providers.ProviderId
 
-package object model {
+package object gtfsrt {
   lazy val MockDepartures = List(
     Departure(Int.MinValue, Int.MinValue),
     Departure(Int.MaxValue, Int.MaxValue))
@@ -30,7 +31,8 @@ package object model {
   lazy val MockGtfsrtSnapshots = for {
       header <- MockSnapshotHeaders
       items <- permute(MockTripUpdates)
-    } yield GtfsrtSnapshot(header, items)
+      providerId = ProviderId("mock-provider")
+    } yield GtfsrtSnapshot(providerId, header, items)
 
   def permute[T](l: List[T]): Iterable[List[T]] =
     List(Nil, List(l.head), l)

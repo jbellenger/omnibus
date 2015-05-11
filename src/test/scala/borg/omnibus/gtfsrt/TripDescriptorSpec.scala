@@ -1,6 +1,5 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.gtfsrt
 
-import borg.omnibus.gtfsrt.TripDescriptor
 import org.scalatest._
 
 class TripDescriptorSpec extends WordSpec with Matchers {

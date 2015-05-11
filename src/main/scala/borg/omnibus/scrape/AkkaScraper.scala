@@ -56,7 +56,7 @@ class AkkaScraper(implicit arf: ActorRefFactory) extends Scraper {
           if (res.status == StatusCodes.OK) {
             res.entity.getDataBytes().map { chunk =>
               val proto = FeedMessage.parseFrom(chunk.toArray)
-              val parsed = GtfsrtSnapshot(proto)
+              val parsed = GtfsrtSnapshot(provider, proto)
               osender ! ScrapeRep(parsed)
             }.to(Sink.ignore()).run()
           }

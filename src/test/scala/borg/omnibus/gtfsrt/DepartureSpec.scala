@@ -1,6 +1,5 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.gtfsrt
 
-import borg.omnibus.gtfsrt.Departure
 import org.scalatest._
 
 class DepartureSpec extends WordSpec with Matchers {

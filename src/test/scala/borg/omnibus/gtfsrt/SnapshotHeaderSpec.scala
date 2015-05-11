@@ -1,6 +1,5 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.gtfsrt
 
-import borg.omnibus.gtfsrt.SnapshotHeader
 import org.scalatest._
 
 class SnapshotHeaderSpec extends WordSpec with Matchers {

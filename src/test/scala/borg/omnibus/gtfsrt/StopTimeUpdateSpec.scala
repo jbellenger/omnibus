@@ -1,6 +1,5 @@
-package borg.omnibus.gtfs.model
+package borg.omnibus.gtfsrt
 
-import borg.omnibus.gtfsrt.StopTimeUpdate
 import org.scalatest._
 
 class StopTimeUpdateSpec extends WordSpec with Matchers {

@@ -2,13 +2,13 @@ package borg.omnibus.scrape
 
 import akka.actor.{Actor, ActorRef, Props}
 import borg.omnibus.providers.{Provider, ProvidersComponent}
-import borg.omnibus.store.StoreComponent
+import borg.omnibus.store.StoresComponent
 import borg.omnibus.util.ActorContextExecutor
 
 trait ScrapeDriverComponent {
   self: ProvidersComponent
     with ScraperComponent
-    with StoreComponent =>
+    with StoresComponent =>
 
   def scrapeDriver: ActorRef
 
@@ -24,7 +24,7 @@ trait ScrapeDriverComponent {
     override def receive = {
       case m@ Scrape(prov: Provider) =>
         scraper.scrape(prov) map {result =>
-          store.save(result)
+          gtfsrtStore.save(result)
           context.system.scheduler.scheduleOnce(prov.gtfsrt.pollInterval, self, m)
         }
     }
