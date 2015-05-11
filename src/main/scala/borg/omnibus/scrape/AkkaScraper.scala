@@ -9,7 +9,6 @@ import akka.stream.scaladsl.{Sink, Source}
 import akka.util.Timeout
 import borg.omnibus.gtfsrt.GtfsrtSnapshot
 import borg.omnibus.providers.Provider
-import borg.omnibus.scrape.Scraper.ScrapeResult
 import com.google.transit.realtime.GtfsRealtime.FeedMessage
 
 import scala.concurrent.Future
@@ -27,7 +26,7 @@ class AkkaScraper(implicit arf: ActorRefFactory) extends Scraper {
     _ref
   }
 
-  override def scrape(provider: Provider): Future[ScrapeResult] = {
+  override def scrape(provider: Provider): Future[GtfsrtSnapshot] = {
     (ref ? ScrapeReq(provider)).mapTo[ScrapeRep].map(_.result)
   }
 
