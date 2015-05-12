@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import borg.omnibus.providers.{Provider, ProvidersComponent}
 import borg.omnibus.store.StoresComponent
 import borg.omnibus.util.ActorContextExecutor
+import grizzled.slf4j.Logging
 
 trait ScrapeDriverComponent {
   self: ProvidersComponent
@@ -12,7 +13,7 @@ trait ScrapeDriverComponent {
 
   def scrapeDriver: ActorRef
 
-  class ScrapeDriver extends Actor with ActorContextExecutor {
+  class ScrapeDriver extends Actor with ActorContextExecutor with Logging {
     import ScrapeDriver.Messages._
 
     override def preStart(): Unit = {
@@ -26,6 +27,10 @@ trait ScrapeDriverComponent {
         scraper.scrape(prov) map {result =>
           gtfsrtStore.save(result)
           context.system.scheduler.scheduleOnce(prov.gtfsrt.pollInterval, self, m)
+        } recover {
+          case x: Throwable =>
+            error("error", x)
+            context.system.scheduler.scheduleOnce(prov.gtfsrt.pollInterval, self, m)
         }
     }
   }

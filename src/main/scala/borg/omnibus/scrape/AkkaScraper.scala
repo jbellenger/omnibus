@@ -10,11 +10,12 @@ import akka.util.Timeout
 import borg.omnibus.gtfsrt.GtfsrtSnapshot
 import borg.omnibus.providers.Provider
 import com.google.transit.realtime.GtfsRealtime.FeedMessage
+import grizzled.slf4j.Logging
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-class AkkaScraper(implicit arf: ActorRefFactory) extends Scraper {
+class AkkaScraper(implicit arf: ActorRefFactory) extends Scraper with Logging {
   import AkkaScraperActor.Messages._
 
   private implicit val timeout: Timeout = 3.seconds

@@ -14,8 +14,16 @@ case class GtfsrtSnapshot(providerId: ProviderId, header: SnapshotHeader, items:
 object GtfsrtSnapshot {
   def apply(provider: Provider, msg: FeedMessage): GtfsrtSnapshot = {
     val head = SnapshotHeader(msg.getHeader)
-    val items = msg.getEntityList.toList.map(_.getTripUpdate).map(TripUpdate.apply)
-    GtfsrtSnapshot(provider.id, head, items)
+    val updates = msg.getEntityList.toList map {entity =>
+      require(!entity.getIsDeleted, "can't understand entities marked as deleted")
+      if (entity.hasAlert)
+        println(s"encountered alert on entity: ${entity.getAlert}")
+      if (entity.hasVehicle)
+        println(s"encountered vehicle position on entity: ${entity.getVehicle}")
+      require(entity.hasTripUpdate, s"entity missing trip_update: $entity")
+      TripUpdate(entity.getTripUpdate)
+    }
+    GtfsrtSnapshot(provider.id, head, updates)
   }
 
   def apply(mongo: MongoDBObject): GtfsrtSnapshot = {

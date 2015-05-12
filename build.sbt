@@ -11,5 +11,7 @@ libraryDependencies := Seq(
   "com.google.protobuf" % "protobuf-java" % "2.5.0",
   "com.github.nscala-time" %% "nscala-time" % "2.0.0",
   "org.scalatest" %% "scalatest" % "2.2.4" % "test",
-  "org.mongodb" %% "casbah" % "2.8.1"
+  "org.mongodb" %% "casbah" % "2.8.1",
+  "org.clapper" %% "grizzled-slf4j" % "1.0.2",
+  "org.slf4j" % "slf4j-jdk14" % "1.7.12"
 )

@@ -1,8 +1,11 @@
 package borg.omnibus.store
 
 import com.mongodb.casbah.Imports._
+import grizzled.slf4j.Logging
 
-class MongoCollectionStore(db: MongoDB, indices: MongoIndices, collectionName: String) extends Store[MongoDBObject] {
+class MongoCollectionStore(db: MongoDB, indices: MongoIndices, collectionName: String)
+    extends Store[MongoDBObject]
+    with Logging {
 
   private val coll = db(collectionName)
 

@@ -3,10 +3,12 @@ package borg.omnibus
 import borg.omnibus.gtfs.{Direction0, Direction1}
 import borg.omnibus.providers.ProviderId
 
+import scala.concurrent.duration._
+
 package object gtfsrt {
   lazy val MockDepartures = List(
-    Departure(Int.MinValue, Int.MinValue),
-    Departure(Int.MaxValue, Int.MaxValue))
+    Departure(Duration.Zero, Int.MinValue),
+    Departure(Int.MaxValue.seconds, Int.MaxValue))
 
   lazy val MockSnapshotHeaders = List(
     SnapshotHeader(Long.MinValue),
