@@ -25,6 +25,7 @@ trait ScrapeDriverComponent {
     override def receive = {
       case m@ Scrape(prov: Provider) =>
         scraper.scrape(prov) map {result =>
+          info(s"store tick: ${prov.id}")
           gtfsrtStore.save(result)
           context.system.scheduler.scheduleOnce(prov.gtfsrt.pollInterval, self, m)
         } recover {
