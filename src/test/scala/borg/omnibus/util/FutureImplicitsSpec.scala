@@ -49,6 +49,14 @@ class FutureImplicitsSpec extends WordSpec with Matchers with ScalaFutures {
           _ shouldBe 1
         }
       }
+      "not throw TimeoutException for already-failed futures" in {
+        object TestException extends Exception
+        val fut = Future.failed(TestException).timeout(defaultDuration)
+
+        whenReady(fut.failed) {
+          _ shouldBe TestException
+        }
+      }
     }
   }
 

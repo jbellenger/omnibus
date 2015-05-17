@@ -8,7 +8,7 @@ object Providers {
   lazy val Bart = Provider(
     ProviderId("bart"),
     GtfsrtMeta("http://api.bart.gov:80/gtfsrt/tripupdate.aspx", 15.seconds),
-    GtfsModels.fromResource("/bart-gtfs.zip"))
+    GtfsModels.fromResource("/providers/bart-gtfs.zip"))
 
   lazy val providers = List(Bart)
 }
