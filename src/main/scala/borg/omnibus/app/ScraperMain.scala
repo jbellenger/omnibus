@@ -3,7 +3,7 @@ package borg.omnibus.app
 import akka.actor.ActorSystem
 import borg.omnibus.gtfsrt.GtfsrtSnapshot
 import borg.omnibus.providers.{Providers, ProvidersComponent}
-import borg.omnibus.scrape.{AkkaScraper, ScrapeDriverComponent, ScraperComponent}
+import borg.omnibus.scrape.{ScrapeDriverComponent, ScraperComponent, StreamScraper}
 import borg.omnibus.store._
 import com.mongodb.casbah.MongoClient
 
@@ -22,7 +22,7 @@ object ScraperMain extends App {
       new MongoCollectionStore(db, MongoIndices.Gtfsrt, "gtfsrt")
         .wrap(GtfsrtSnapshot.MongoCodec)
 
-    override lazy val scraper = new AkkaScraper
+    override lazy val scraper = new StreamScraper
 
     override val scrapeDriver = system.actorOf(ScrapeDriver.props)
   }

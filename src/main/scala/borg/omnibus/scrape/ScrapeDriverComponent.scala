@@ -3,8 +3,11 @@ package borg.omnibus.scrape
 import akka.actor.{Actor, ActorRef, Props}
 import borg.omnibus.providers.{Provider, ProvidersComponent}
 import borg.omnibus.store.StoresComponent
-import borg.omnibus.util.ActorContextExecutor
+import borg.omnibus.util.ActorContextImplicits
+import borg.omnibus.util.FutureImplicits._
 import grizzled.slf4j.Logging
+
+import scala.concurrent.duration._
 
 trait ScrapeDriverComponent {
   self: ProvidersComponent
@@ -13,7 +16,7 @@ trait ScrapeDriverComponent {
 
   def scrapeDriver: ActorRef
 
-  class ScrapeDriver extends Actor with ActorContextExecutor with Logging {
+  class ScrapeDriver extends Actor with ActorContextImplicits with Logging  {
     import ScrapeDriver.Messages._
 
     override def preStart(): Unit = {
@@ -24,7 +27,7 @@ trait ScrapeDriverComponent {
 
     override def receive = {
       case m@ Scrape(prov: Provider) =>
-        scraper.scrape(prov) map {result =>
+        scraper.scrape(prov).timeout(3.seconds) map {result =>
           info(s"store tick: ${prov.id}")
           gtfsrtStore.save(result)
           context.system.scheduler.scheduleOnce(prov.gtfsrt.pollInterval, self, m)
