@@ -8,5 +8,7 @@ case class MongoIndices(indices: Iterable[MongoIndex]) extends Iterable[MongoInd
 }
 
 object MongoIndices {
-  val Gtfsrt = MongoIndices(Nil)
+  val TripUpdate = MongoIndices(Nil)
+  val VehiclePosition = MongoIndices(Nil)
+  val Alert = MongoIndices(Nil)
 }

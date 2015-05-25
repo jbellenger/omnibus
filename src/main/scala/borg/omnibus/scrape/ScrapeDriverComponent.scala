@@ -1,6 +1,7 @@
 package borg.omnibus.scrape
 
 import akka.actor.{Actor, ActorRef, Props}
+import borg.omnibus.gtfsrt.{AlertRecord, TripUpdateRecord, VehiclePositionRecord}
 import borg.omnibus.providers.{Provider, ProvidersComponent}
 import borg.omnibus.store.StoresComponent
 import borg.omnibus.util.ActorContextImplicits
@@ -27,14 +28,19 @@ trait ScrapeDriverComponent {
 
     override def receive = {
       case m@ Scrape(prov: Provider) =>
-        scraper.scrape(prov).timeout(3.seconds) map {result =>
-          info(s"store tick: ${prov.id}")
-          gtfsrtStore.save(result)
-          context.system.scheduler.scheduleOnce(prov.gtfsrt.pollInterval, self, m)
+        val fut = scraper.scrape(prov).timeout(3.seconds) map {records =>
+          info(s"store tick provider=${prov.id} records=${records.size}")
+          records foreach {
+            case r: TripUpdateRecord => tripUpdatesStore.save(r)
+            case r: AlertRecord => alertStore.save(r)
+            case r: VehiclePositionRecord => vehiclePositionStore.save(r)
+          }
         } recover {
           case x: Throwable =>
             error("error", x)
-            context.system.scheduler.scheduleOnce(prov.gtfsrt.pollInterval, self, m)
+        }
+        fut.onComplete {_ =>
+          context.system.scheduler.scheduleOnce(prov.gtfsrt.interval, self, Scrape(prov))
         }
     }
   }

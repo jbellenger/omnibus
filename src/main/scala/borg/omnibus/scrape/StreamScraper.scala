@@ -8,7 +8,7 @@ import akka.http.unmarshalling.Unmarshal
 import akka.stream.ActorFlowMaterializer
 import akka.stream.scaladsl._
 import akka.util.ByteString
-import borg.omnibus.gtfsrt.GtfsrtSnapshot
+import borg.omnibus.gtfsrt.{Record, RecordHeader}
 import borg.omnibus.providers.Provider
 import com.google.transit.realtime.GtfsRealtime.FeedMessage
 
@@ -42,24 +42,32 @@ class StreamScraper(implicit system: ActorSystem) extends Scraper {
       }
   }
 
-  override def scrape(provider: Provider): Future[GtfsrtSnapshot] = {
-    val uri = provider.gtfsrt.uri
-    val req = HttpRequest(uri = uri.toRelative)
+  override def scrape(provider: Provider): Future[Iterable[Record]] = {
+    val futs = provider.gtfsrt.apis.groupBy(_.uri) map {
+      case (uri, apis) =>
+        val req = HttpRequest(uri = uri.toRelative)
 
-    val promise = Promise[GtfsrtSnapshot]()
+        val promise = Promise[Iterable[Record]]()
 
-    val replySink = Sink.foreach[Try[FeedMessage]] {result =>
-      val snapTry = result.map(proto => GtfsrtSnapshot(provider, proto))
-      promise.complete(snapTry)
+        val replySink = Sink.foreach[Try[FeedMessage]] {result =>
+          val records = result map {proto =>
+            val header = RecordHeader(provider, proto.getHeader)
+            apis.flatMap(x => x.parse(header, proto))
+          }
+
+          promise.complete(records)
+        }
+
+        Source.single(req)
+          .via(httpClient(uri))
+          .via(collectChunks)
+          .via(parseProto)
+          .runWith(replySink)
+
+        promise.future
     }
 
-    Source.single(req)
-      .via(httpClient(uri))
-      .via(collectChunks)
-      .via(parseProto)
-      .runWith(replySink)
-
-    promise.future
+    Future.fold(futs)(List.empty[Record])(_ ++ _)
   }
 
   override def shutdown(): Unit = {}

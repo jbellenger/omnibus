@@ -7,6 +7,7 @@ object MongoImplicits {
     def objectSeq(key: String): Seq[MongoDBObject] = {
       o.as[MongoDBList](key) collect {
         case x: MongoDBObject => x
+        case x: BasicDBObject => new MongoDBObject(x)
       }
     }
   }

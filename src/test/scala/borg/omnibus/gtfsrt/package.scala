@@ -1,18 +1,25 @@
 package borg.omnibus
 
 import borg.omnibus.gtfs.{Direction0, Direction1}
-import borg.omnibus.providers.ProviderId
 
 import scala.concurrent.duration._
 
 package object gtfsrt {
+  lazy val MockTimeRanges = List(
+    TimeRange(Long.MinValue, Long.MaxValue))
+
+  lazy val MockAlertRecords = for {
+    trs <- permute(MockTimeRanges)
+    header <- MockRecordHeaders
+  } yield AlertRecord(header, trs, 0, 0, "mock-url")
+
   lazy val MockDepartures = List(
     Departure(Duration.Zero, Int.MinValue),
     Departure(Int.MaxValue.seconds, Int.MaxValue))
 
-  lazy val MockSnapshotHeaders = List(
-    SnapshotHeader(Long.MinValue),
-    SnapshotHeader(Long.MaxValue))
+  lazy val MockRecordHeaders = List(
+    RecordHeader("mock-provider", 0L),
+    RecordHeader("mock-provider", Long.MaxValue))
 
   lazy val MockTripDescriptors = List(
     TripDescriptor("mock-tripid", Some(Direction0), "mock-routeid"),
@@ -25,16 +32,11 @@ package object gtfsrt {
       stopId <- List("", null, "mock-stopid")
     } yield StopTimeUpdate(stopSeq, dept, stopId)
 
-  lazy val MockTripUpdates = for {
+  lazy val MockTripUpdateRecords = for {
+      header <- MockRecordHeaders
       td <- MockTripDescriptors
       stus <- permute(MockStopTimeUpdates)
-    } yield TripUpdate(td, stus)
-
-  lazy val MockGtfsrtSnapshots = for {
-      header <- MockSnapshotHeaders
-      items <- permute(MockTripUpdates)
-      providerId = ProviderId("mock-provider")
-    } yield GtfsrtSnapshot(providerId, header, items)
+    } yield TripUpdateRecord(header, td, stus)
 
   def permute[T](l: List[T]): Iterable[List[T]] =
     List(Nil, List(l.head), l)

@@ -1,6 +1,6 @@
 package borg.omnibus.store
 
-import borg.omnibus.gtfsrt.GtfsrtSnapshot
+import borg.omnibus.gtfsrt._
 
 trait Store[T] {
   def save(obj: T)
@@ -20,5 +20,7 @@ trait Store[T] {
 }
 
 trait StoresComponent {
-  def gtfsrtStore: Store[GtfsrtSnapshot]
+  def tripUpdatesStore: Store[TripUpdateRecord]
+  def alertStore: Store[AlertRecord]
+  def vehiclePositionStore: Store[VehiclePositionRecord]
 }
