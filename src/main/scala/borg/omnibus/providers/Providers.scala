@@ -14,6 +14,14 @@ object Providers {
     ),
     GtfsModels.fromResource("/providers/bart-gtfs.zip"))
 
+  lazy val ArlingtonTransit = Provider(
+    "art",
+    GtfsrtApis(
+      30.seconds,
+      TripUpdateApi("http://realtime.commuterpage.com/rtt/public/utility/gtfsrealtime.aspx/tripupdate")
+    ),
+    GtfsModels.fromResource("/providers/art-gtfs.zip")
+  )
   lazy val providers = List(Bart)
 }
 
