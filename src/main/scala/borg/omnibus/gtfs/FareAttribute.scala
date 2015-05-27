@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs2
+package borg.omnibus.gtfs
 
 case class FareAttribute(
   fareId: String,
@@ -21,7 +21,7 @@ object FareAttributeModel extends Model[FareAttribute] {
       values(FareId),
       values(Price).toDouble,
       values(CurrencyType),
-      values(PaymentMethod).toInt,
-      values(Transfers).toInt,
+      values(PaymentMethod).safeToInt,
+      values(Transfers).safeToInt,
       values(TransferDuration))
 }

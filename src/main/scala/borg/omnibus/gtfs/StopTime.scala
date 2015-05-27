@@ -2,33 +2,38 @@ package borg.omnibus.gtfs
 
 case class StopTime(
   tripId: String,
-  arrivalTime: String,      // bart uses a 25-hour clock which makes parsing difficult
+  arrivalTime: String,
   departureTime: String,
   stopId: String,
   stopSequence: Int,
-  stopHeadSign: String,
-  pickupType: String,
-  dropOffType: String)
+  stopHeadsign: Option[String],
+  pickupType: Option[Int],
+  dropOffType: Option[Int],
+  shapeDistTraveled: Option[String],
+  timepoint: Option[Int])
 
-object StopTime {
-  def apply(line: String): StopTime = {
-    line.split(",", -1) match {
-      case Array(tripId, arrivalTime, departureTime, stopId, stopSeq, stopHeadSign, pickupType, dropOffType) =>
-        StopTime(tripId, arrivalTime, departureTime, stopId, stopSeq.toInt, stopHeadSign, pickupType, dropOffType)
-    }
-  }
-}
+object StopTimeModel extends Model[StopTime] {
+  val TripId = required("trip_id")
+  val ArrivalTime = required("arrival_time")
+  val DepartureTime = required("departure_time")
+  val StopId = required("stop_id")
+  val StopSequence = required("stop_sequence")
+  val StopHeadsign = optional("stop_headsign")
+  val PickupType = optional("pickup_type")
+  val DropOffType = optional("drop_off_type")
+  val ShapeDistTraveled = optional("shape_dist_traveled")
+  val Timepoint = optional("timepoint")
 
-case class StopTimes(items: Map[String, Seq[StopTime]])
-
-object StopTimes extends ModelCompanion[StopTimes] {
-  override def parse(lines: Iterable[String]): StopTimes = {
-    val items = lines
-      .map(StopTime.apply)
-      .groupBy(_.tripId)
-      .mapValues {
-        case xs => xs.toList.sortBy(_.stopSequence)
-      }
-    StopTimes(items)
-  }
+  override def apply(values: Values) =
+    StopTime(
+      values(TripId),
+      values(ArrivalTime),
+      values(DepartureTime),
+      values(StopId),
+      values(StopSequence).toInt,
+      values(StopHeadsign),
+      values(PickupType).map(_.toInt),
+      values(DropOffType).map(_.toInt),
+      values(ShapeDistTraveled),
+      values(Timepoint).map(_.toInt))
 }

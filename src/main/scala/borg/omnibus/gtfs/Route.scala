@@ -2,44 +2,37 @@ package borg.omnibus.gtfs
 
 import java.net.URL
 
-import scala.language.implicitConversions
-
 case class Route(
   routeId: String,
-  agencyId: String,
+  agencyId: Option[String],
   routeShortName: String,
   routeLongName: String,
-  routeDesc: String,
-  routeType: String,
-  routeUrl: URL,
-  routeColor: String,
-  routeTextColor: String)
+  routeDesc: Option[String],
+  routeType: Long,
+  routeUrl: Option[URL],
+  routeColor: Option[String],
+  routeTextColor: Option[String])
 
-object Route extends {
-  def apply(line: String): Route = {
-    line.split(",", -1) match {
-      case arr: Array[String] if arr.length == 9 =>
-        val a = arr.asInstanceOf[Array[String]]
-        Route(
-          a(0),
-          a(1),
-          a(2),
-          a(3),
-          a(4),
-          a(5),
-          new URL(a(6)),
-          a(7),
-          a(8)
-        )
-    }
-  }
-}
+object RouteModel extends Model[Route] {
+  val RouteId = required("route_id")
+  val AgencyId = optional("agency_id")
+  val RouteShortName = required("route_short_name")
+  val RouteLongName = required("route_long_name")
+  val RouteDesc = optional("route_desc")
+  val RouteType = required("route_type")
+  val RouteUrl = optional("route_url")
+  val RouteColor = optional("route_color")
+  val RouteTextColor = optional("route_text_color")
 
-case class Routes(items: Map[String, Route])
-
-object Routes extends ModelCompanion[Routes] {
-  implicit def toMap(routes: Routes): Map[String, Route] = routes.items
-
-  override def parse(lines: Iterable[String]): Routes =
-    Routes(toMap[Route](lines, Route.apply, _.routeId))
+  override def apply(values: Values) =
+    Route(
+      values(RouteId),
+      values(AgencyId),
+      values(RouteShortName),
+      values(RouteLongName),
+      values(RouteDesc),
+      values(RouteType).toLong,
+      values(RouteUrl),
+      values(RouteColor),
+      values(RouteTextColor))
 }

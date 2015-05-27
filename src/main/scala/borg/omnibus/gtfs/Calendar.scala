@@ -1,14 +1,14 @@
-package borg.omnibus.gtfs2
+package borg.omnibus.gtfs
 
 case class Calendar(
   serviceId: String,
-  monday: Boolean,
-  tuesday: Boolean,
-  wednesday: Boolean,
-  thursday: Boolean,
-  friday: Boolean,
-  saturday: Boolean,
-  sunday: Boolean,
+  monday: Int,
+  tuesday: Int,
+  wednesday: Int,
+  thursday: Int,
+  friday: Int,
+  saturday: Int,
+  sunday: Int,
   startDate: Long,
   endDate: Long)
 
@@ -27,13 +27,13 @@ object CalendarModel extends Model[Calendar] {
   override def apply(values: Values) =
     Calendar(
       values(ServiceId),
-      values(Monday).toBoolean,
-      values(Tuesday).toBoolean,
-      values(Wednesday).toBoolean,
-      values(Thursday).toBoolean,
-      values(Friday).toBoolean,
-      values(Saturday).toBoolean,
-      values(Sunday).toBoolean,
+      values(Monday).toInt,
+      values(Tuesday).toInt,
+      values(Wednesday).toInt,
+      values(Thursday).toInt,
+      values(Friday).toInt,
+      values(Saturday).toInt,
+      values(Sunday).toInt,
       values(StartDate).toLong,
       values(EndDate).toLong)
 }

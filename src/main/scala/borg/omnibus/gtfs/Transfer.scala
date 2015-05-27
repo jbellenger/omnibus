@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs2
+package borg.omnibus.gtfs
 
 case class Transfer(
   fromStopId: String,

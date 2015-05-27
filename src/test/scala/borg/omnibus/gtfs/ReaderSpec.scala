@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs2
+package borg.omnibus.gtfs
 
 import org.scalatest._
 
@@ -47,10 +47,24 @@ class ReaderSpec extends WordSpec with Matchers {
       }
     }
 
+    "header declares required fields but rows are missing values" should {
+      "parse values as empty string" in {
+        val x = new Reader(TestModel, "a,b").map("A,")
+        x should be (TestObj("A", "", None))
+      }
+    }
+
     "header has optional field" should {
       "coerce values" in {
         val x = new Reader(TestModel, "a,b,c").map("A,B,13")
         x.c shouldBe Some(13L)
+      }
+    }
+
+    "header declares fields that are not defined in model" should {
+      "ignore values for field" in {
+        val x = new Reader(TestModel, "a,b,d").map("A,B,D")
+        x shouldBe TestObj("A", "B", None)
       }
     }
   }

@@ -2,36 +2,47 @@ package borg.omnibus.gtfs
 
 import java.net.URL
 
-import scala.language.implicitConversions
-
 case class Stop(
-  id: String,
-  name: String,
-  desc: String,
-  lat: Double,
-  lon: Double,
-  zoneId: String,
-  url: URL)
+  stopId: String,
+  stopCode: Option[String],
+  stopName: String,
+  stopDesc: Option[String],
+  stopLat: Double,
+  stopLon: Double,
+  zoneId: Option[String],
+  stopUrl: Option[URL],
+  locationType: Option[String],
+  parentStation: Option[String],
+  stopTimezone: Option[String],
+  wheelchairBoarding: Option[Long])
 
-object Stop {
-  def apply(line: String): Stop = {
-    line.split(",", -1) match {
-      case Array(stopId, stopName, stopDesc, lat, lon, zoneId, stopUrl) =>
-        Stop(stopId, stopName, stopDesc, lat.toDouble, lon.toDouble, zoneId, new URL(stopUrl))
-    }
-  }
+object StopModel extends Model[Stop] {
+  val StopId = required("stop_id")
+  val StopCode = optional("stop_code")
+  val StopName = required("stop_name")
+  val StopDesc = optional("stop_desc")
+  val StopLat = required("stop_lat")
+  val StopLon = required("stop_lon")
+  val ZoneId = optional("zone_id")
+  val StopUrl = optional("stop_url")
+  val LocationType = optional("location_type")
+  val ParentStation = optional("parent_station")
+  val StopTimezone = optional("stop_timezone")
+  val WheelchairBoarding = optional("wheelchair_boarding")
+
+  override def apply(values: Values): Stop = Stop(
+    values(StopId),
+    values(StopCode),
+    values(StopName),
+    values(StopDesc),
+    values(StopLat).toDouble,
+    values(StopLon).toDouble,
+    values(ZoneId),
+    values(StopUrl),
+    values(LocationType),
+    values(ParentStation),
+    values(StopTimezone),
+    values(WheelchairBoarding))
 }
 
-case class Stops(items: Map[String, Stop])
 
-object Stops extends ModelCompanion[Stops] {
-  implicit def toMap(stops: Stops): Map[String, Stop] = stops.items
-
-  override def parse(lines: Iterable[String]): Stops = {
-    val items = lines map {l =>
-      val s = Stop(l)
-      s.id -> s
-    }
-    Stops(items.toMap)
-  }
-}

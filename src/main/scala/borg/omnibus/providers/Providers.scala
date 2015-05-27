@@ -1,8 +1,10 @@
 package borg.omnibus.providers
 
+import borg.omnibus.gtfs.GtfsDatabase
+
 import scala.concurrent.duration._
 
-case class Provider(id: String, gtfsrt: GtfsrtApis, gtfsModels: GtfsModels)
+case class Provider(id: String, gtfsrt: GtfsrtApis, gtfs: GtfsDatabase)
 
 object Providers {
   lazy val Bart = Provider(
@@ -12,7 +14,7 @@ object Providers {
       TripUpdateApi("http://api.bart.gov/gtfsrt/tripupdate.aspx"),
       AlertsApi("http://api.bart.gov/gtfsrt/alerts.aspx")
     ),
-    GtfsModels.fromResource("/providers/bart-gtfs.zip"))
+    GtfsDatabase.fromResource("/providers/bart-gtfs.zip"))
 
   lazy val ArlingtonTransit = Provider(
     "art",
@@ -20,9 +22,9 @@ object Providers {
       30.seconds,
       TripUpdateApi("http://realtime.commuterpage.com/rtt/public/utility/gtfsrealtime.aspx/tripupdate")
     ),
-    GtfsModels.fromResource("/providers/art-gtfs.zip")
+    GtfsDatabase.fromResource("/providers/art-gtfs.zip")
   )
-  lazy val providers = List(Bart)
+  lazy val providers = List(Bart, ArlingtonTransit)
 }
 
 trait ProvidersComponent {

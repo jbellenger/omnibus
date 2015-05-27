@@ -1,4 +1,4 @@
-package borg.omnibus.gtfs2
+package borg.omnibus.gtfs
 
 class Reader[T](model: Model[T], header: String) {
   val headerArray = header.split(",").map(_.trim)
@@ -11,9 +11,11 @@ class Reader[T](model: Model[T], header: String) {
 
   def map(line: String): T = {
     val pairs = headerArray.zip(line.split(",", -1).map(_.trim())) flatMap {
-      case (fieldKey, value) => model.fields(fieldKey) match {
+      case (fieldKey, value) => model.fields.get(fieldKey) flatMap {
         case f: OptionalField if value == "" =>
           None
+        case f: RequiredField if value == "" =>
+          Some(f -> "")
         case f if value != "" =>
           Some(f -> value)
       }
