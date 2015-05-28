@@ -24,7 +24,7 @@ object Providers {
     ),
     GtfsDatabase.fromResource("/providers/art-gtfs.zip")
   )
-  lazy val providers = List(Bart)
+  lazy val providers = List(Bart, ArlingtonTransit)
 }
 
 trait ProvidersComponent {

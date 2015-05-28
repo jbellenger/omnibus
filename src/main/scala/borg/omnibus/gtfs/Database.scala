@@ -1,9 +1,10 @@
 package borg.omnibus.gtfs
 
 import java.net.URL
+import java.util.zip.ZipFile
 
-import scala.io.Source
-import scala.reflect.io.ZipArchive
+import scala.collection.JavaConversions._
+import scala.io.{Codec, Source}
 
 trait GtfsDatabase {
   val agencies: Seq[Agency]
@@ -23,13 +24,20 @@ trait GtfsDatabase {
 
 object GtfsDatabase {
   def fromResource(resourcePath: String): GtfsDatabase = {
-    fromUrl(getClass.getResource(resourcePath))
+    val url = getClass.getResource(resourcePath)
+    fromUrl(url)
   }
 
   def fromUrl(url: URL): GtfsDatabase = {
-    val zip = ZipArchive.fromURL(url)
-    val files = zip.map { file =>
-      file.canonicalPath -> Source.fromBytes(file.toByteArray)
+    val jfile = new java.io.File(url.toURI)
+    val zip = new ZipFile(jfile)
+    fromZip(zip)
+  }
+
+  def fromZip(zip: ZipFile): GtfsDatabase = {
+    val files = zip.entries().map {entry =>
+      val stream = zip.getInputStream(entry)
+      entry.getName -> Source.fromInputStream(stream)(Codec.UTF8)
     }.toMap
 
     new GtfsDatabase {
@@ -65,13 +73,10 @@ object GtfsDatabase {
     }
   }
 
-  private def read[T](source: Source, model: Model[T]): Stream[T] = {
-    val lines = source.getLines().toStream
-    val reader = new Reader(model, lines.head)
-    lines.tail.map(_.trim()).filter(_.nonEmpty).map(reader.map)
-  }
+  private def read[T](source: Source, model: Model[T]): Seq[T] =
+    Reader(source, model).toStream
 
-  private def read[T](source: Option[Source], model: Model[T]): Stream[T] = {
+  private def read[T](source: Option[Source], model: Model[T]): Seq[T] = {
     source match {
       case Some(s) => read(s, model)
       case _ => Stream.empty[T]

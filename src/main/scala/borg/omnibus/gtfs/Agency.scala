@@ -5,7 +5,7 @@ import java.net.URL
 case class Agency(
   agencyId: Option[String],
   agencyName: String,
-  agencyUrl: URL,
+  agencyUrl: String,
   agencyTimezone: String,
   agencyLang: Option[String],
   agencyPhone: Option[String],

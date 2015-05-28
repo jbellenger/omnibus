@@ -67,5 +67,20 @@ class ReaderSpec extends WordSpec with Matchers {
         x shouldBe TestObj("A", "B", None)
       }
     }
+
+    "split" should {
+      "split on non-quoted commas" in {
+        Reader.split("A,B,C") shouldBe Array("A", "B", "C")
+      }
+      "not split on quoted commas" in {
+        Reader.split("A,\"B,C\",D") shouldBe Array("A", "B,C", "D")
+      }
+      "split an empty string" in {
+        Reader.split("") shouldBe Array("")
+      }
+      "not split on strings with no commas" in {
+        Reader.split("ABC") shouldBe Array("ABC")
+      }
+    }
   }
 }
