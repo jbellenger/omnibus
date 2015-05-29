@@ -28,7 +28,7 @@ trait ScrapeDriverComponent {
 
     override def receive = {
       case m@ Scrape(prov: Provider) =>
-        val fut = scraper.scrape(prov).timeout(3.seconds) map {records =>
+        val fut = scraper.scrape(prov).timeout(5.seconds) map {records =>
           info(s"store tick provider=${prov.id} records=${records.size}")
           records foreach {
             case r: TripUpdateRecord => tripUpdatesStore.save(r)
