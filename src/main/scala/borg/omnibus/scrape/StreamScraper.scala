@@ -9,7 +9,6 @@ import akka.stream.ActorFlowMaterializer
 import akka.stream.scaladsl._
 import akka.util.ByteString
 import borg.omnibus.gtfsrt.{Record, RecordHeader}
-import borg.omnibus.providers.Provider
 import com.google.transit.realtime.GtfsRealtime.FeedMessage
 
 import scala.concurrent.duration._
@@ -42,8 +41,8 @@ class StreamScraper(implicit system: ActorSystem) extends Scraper {
       }
   }
 
-  override def scrape(provider: Provider): Future[Iterable[Record]] = {
-    val futs = provider.gtfsrt.apis.groupBy(_.uri) map {
+  override def scrape(s: Scrapable): Future[Iterable[Record]] = {
+    val futs = s.gtfsrt.apis.groupBy(_.uri) map {
       case (uri, apis) =>
         val req = HttpRequest(uri = uri.toRelative)
 
@@ -51,7 +50,7 @@ class StreamScraper(implicit system: ActorSystem) extends Scraper {
 
         val replySink = Sink.foreach[Try[FeedMessage]] {result =>
           val records = result map {proto =>
-            val header = RecordHeader(provider, proto.getHeader)
+            val header = RecordHeader(s.id, proto.getHeader)
             apis.flatMap(x => x.parse(header, proto))
           }
 

@@ -27,9 +27,9 @@ trait ScrapeDriverComponent {
     }
 
     override def receive = {
-      case m@ Scrape(prov: Provider) =>
-        val fut = scraper.scrape(prov).timeout(5.seconds) map {records =>
-          info(s"store tick provider=${prov.id} records=${records.size}")
+      case m@ Scrape(s: Scrapable) =>
+        val fut = scraper.scrape(s).timeout(5.seconds) map {records =>
+          info(s"store tick provider=${s.id} records=${records.size}")
           records foreach {
             case r: TripUpdateRecord => tripUpdatesStore.save(r)
             case r: AlertRecord => alertStore.save(r)
@@ -40,7 +40,7 @@ trait ScrapeDriverComponent {
             error("error", x)
         }
         fut.onComplete {_ =>
-          context.system.scheduler.scheduleOnce(prov.gtfsrt.interval, self, Scrape(prov))
+          context.system.scheduler.scheduleOnce(s.gtfsrt.interval, self, m)
         }
     }
   }

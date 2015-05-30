@@ -3,8 +3,11 @@ package borg.omnibus.gtfs
 import java.net.URL
 import java.util.zip.ZipFile
 
+import borg.omnibus.csv.Reader
+import borg.omnibus.util.PrintTiming
+
 import scala.collection.JavaConversions._
-import scala.io.{Codec, Source}
+import scala.io.Source
 
 trait GtfsDatabase {
   val agencies: Seq[Agency]
@@ -22,7 +25,7 @@ trait GtfsDatabase {
   val feedInfo: Seq[FeedInfo]
 }
 
-object GtfsDatabase {
+object GtfsDatabase extends PrintTiming {
   def fromResource(resourcePath: String): GtfsDatabase = {
     val url = getClass.getResource(resourcePath)
     fromUrl(url)
@@ -37,7 +40,7 @@ object GtfsDatabase {
   def fromZip(zip: ZipFile): GtfsDatabase = {
     val files = zip.entries().map {entry =>
       val stream = zip.getInputStream(entry)
-      entry.getName -> Source.fromInputStream(stream)(Codec.UTF8)
+      entry.getName -> Source.fromInputStream(stream).mkString
     }.toMap
 
     new GtfsDatabase {
@@ -73,12 +76,13 @@ object GtfsDatabase {
     }
   }
 
-  private def read[T](source: Source, model: Model[T]): Seq[T] =
-    Reader(source, model).toStream
+  private def read[T](body: String, model: Model[T]): Seq[T] = {
+    Reader(body, model).toStream
+  }
 
-  private def read[T](source: Option[Source], model: Model[T]): Seq[T] = {
-    source match {
-      case Some(s) => read(s, model)
+  private def read[T](body: Option[String], model: Model[T]): Seq[T] = {
+    body match {
+      case Some(b) => read(b, model)
       case _ => Stream.empty[T]
     }
   }
@@ -87,11 +91,5 @@ object GtfsDatabase {
     vs.map {v =>
       fn(v) -> v
     }.toMap
-  }
-}
-
-object Test {
-  def main(args: Array[String]): Unit = {
-    GtfsDatabase.fromResource("/providers/bart-gtfs.zip")
   }
 }
