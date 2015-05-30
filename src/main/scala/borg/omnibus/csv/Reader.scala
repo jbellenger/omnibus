@@ -33,8 +33,7 @@ object Reader {
         val reader = new Reader(model, header.fields)
         rows.map(r => reader.map(r.fields))
       case Left(err) =>
-        val x = 1
-        Nil
+        throw new IllegalArgumentException(s"could not parse body: $err" )
     }
   }
 }

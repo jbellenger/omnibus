@@ -10,8 +10,9 @@ case class VehiclePositionRecord(header: RecordHeader) extends Record {
 }
 
 object VehiclePositionRecord {
-  def apply(header: RecordHeader, proto: GtfsRealtime.VehiclePosition): VehiclePositionRecord =
+  def apply(header: RecordHeader, proto: GtfsRealtime.VehiclePosition): VehiclePositionRecord = {
     VehiclePositionRecord(header)
+  }
 
   def apply(mongo: MongoDBObject): VehiclePositionRecord =
     VehiclePositionRecord(

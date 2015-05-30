@@ -27,7 +27,7 @@ class CsvParser(val input: ParserInput, headerPresent: Boolean, fieldDelimiter: 
   def BOM = '\uFEFF'
 
   def file = rule {
-    OBOM ~ OWS ~ optional(test(headerPresent) ~ header ~ NL) ~ oneOrMore(record).separatedBy(NL) ~ optional(NL) ~ EOI ~> CsvFile
+    OBOM ~ OWS ~ optional(test(headerPresent) ~ header ~ NL) ~ zeroOrMore(record).separatedBy(NL) ~ zeroOrMore(NL) ~ EOI ~> CsvFile
   }
 
   def header = rule { record }
